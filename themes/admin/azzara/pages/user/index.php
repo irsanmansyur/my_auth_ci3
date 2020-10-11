@@ -51,6 +51,7 @@
                                             <th scope="col">#</th>
                                             <th scope="col">nama User</th>
                                             <th scope="col">Gambar</th>
+                                            <th scope="col">Set Access Role</th>
                                             <th scope="col">Action</th>
                                         </tr>
                                     </thead>
@@ -63,7 +64,10 @@
                                                 <td><?= $user->name; ?></td>
                                                 <td><img src="<?= base_url('assets/img/profile/' . $user->profile); ?>" alt="" style="width:100px;height:100px"> </td>
                                                 <td>
-                                                    <a href="<?= base_url('admin/user/edit/' . $user->id); ?>" class="btn btn-warning btn-sm rounded">Edit</a>
+                                                    <a href="<?= base_url('super-admin/access/type/' . $user->id . "/user"); ?>" class="btn btn-secondary btn-sm rounded">Change Accesss</a>
+                                                </td>
+                                                <td>
+                                                    <a href="<?= base_url('admin/user/edit' . $user->id); ?>" class="btn btn-warning btn-sm rounded">Edit</a>
                                                     <a href="<?= base_url('admin/user/delete/' . $user->id); ?>" class="delete btn btn-danger btn-sm rounded">Delete</a>
                                                 </td>
                                             </tr>

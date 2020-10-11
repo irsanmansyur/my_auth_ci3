@@ -17,7 +17,7 @@ class Access extends Admin_Controller
       ];
       $this->template->load('admin', 'super-admin/menu/index', array_merge($data, compact("menus")));
    }
-   public function type($id, $type)
+   public function type($id, $type, $type2 = null)
    {
       $this->load->library("form_validation");
       if ($type == 'menu') {
@@ -32,7 +32,8 @@ class Access extends Admin_Controller
          if (!$user) {
             $this->not_permition();
          }
-         $this->data['user'] = $user;
+         $this->data['isUser'] = $user;
+         return $this->change_user_access_role();
       } elseif ($type == "submenu") {
          $submenu = $this->db->get_where("submenus", ['id' => $id])->row();
          if (!$submenu) {
@@ -40,6 +41,13 @@ class Access extends Admin_Controller
          }
          $this->data['submenu'] = $submenu;
          return $this->change_submenu_access();
+      } elseif ($type == "rule") {
+         $rule = $this->db->get_where("rules", ['id' => $id])->row();
+         if (!$rule) {
+            $this->not_permition();
+         }
+         $this->data['rule'] = $rule;
+         return $this->change_rule_access($type2);
       }
       $this->form_validation->set_rules("role_id", "Role", "required");
       if ($this->form_validation->run()) {
@@ -92,9 +100,55 @@ class Access extends Admin_Controller
       ];
       $this->template->load('admin', 'super-admin/access/submenu', array_merge($data, compact(['rules'])));
    }
-
-   function add()
+   function change_user_access_role()
    {
+      $isUser = (object) $this->data['isUser'];
+      $this->db->select("rules.*")->from('rules')->join("access_role_user", "access_role_user.role_id=rules.id")
+         ->group_by("rules.id");
+      $rules = $this->db->get()->result();
+
+      foreach ($rules as $key => $rule) {
+         $userAccess = $this->db->get_where("access_role_user", ['role_id' => $rule->id, "user_id" => $isUser->id])->row();
+         $rule->selected = false;
+         if ($userAccess)
+            $rule->selected = true;
+         $rules[$key] = $rule;
+         $data = [
+            'page_title' => "Form add User to Rules access",
+         ];
+         $this->template->load('admin', 'super-admin/access/user', array_merge($data, compact(['rules'])));
+      }
+   }
+
+   function change_rule_access($type)
+   {
+      $rule = (object) $this->data['rule'];
+
+      $users = $menus = [];
+      if ($type == "users") {
+         $users =  $this->db->get_where("users", ['id !=' => 1])->result();
+         foreach ($users as $key => $user) {
+            $userAccess = $this->db->get_where("access_role_user", ['role_id' => $rule->id, "user_id" => $user->id])->row();
+            $user->selected = false;
+            if ($userAccess)
+               $user->selected = true;
+            $users[$key] = $user;
+         }
+      } elseif ($type == "menus") {
+         $menus =  $this->db->get_where("menus", ['id !=' => 1])->result();
+
+         foreach ($menus as $key => $menu) {
+            $menuAccess = $this->db->get_where("access_menu_role", ['role_id' => $rule->id, "menu_id" => $menu->id])->row();
+            $menu->selected = false;
+            if ($menuAccess)
+               $menu->selected = true;
+            $menus[$key] = $menu;
+         }
+      }
+      $data = [
+         'page_title' => "Select Role  access",
+      ];
+      $this->template->load('admin', 'super-admin/access/rule', array_merge($data, compact(['users', 'menus'])));
    }
 
 

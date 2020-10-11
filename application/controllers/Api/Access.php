@@ -167,43 +167,133 @@ class Access extends RestController
          ], 400);
       }
    }
-
-   public function register_post()
+   public function user_delete($userId, $roleId)
+   {
+      $data = [
+         "role_id" => $roleId,
+         "user_id" => $userId,
+      ];
+      $userReadyAccess = $this->db->get_where("access_role_user", $data)->row();
+      if ($userReadyAccess) {
+         $this->db->where($data)->delete("access_role_user");
+         return   $this->response([
+            "status" => true,
+            "message" => "the role access Users has been removed",
+            "data" => $data
+         ], 200);
+      } else {
+         $this->response([
+            "status" => false,
+            "message" => "User role access not found",
+            "data" => $data
+         ], 400);
+      }
+   }
+   public function user_post()
    {
       $this->load->library("form_validation");
       $this->form_validation->set_data($this->post());
-      $this->form_validation->set_rules("username", "username", "required");
-      $this->form_validation->set_rules("password", "Password", "required");
-      $this->form_validation->set_rules("noHp", "No hp", "required");
-      $this->form_validation->set_rules("email", "email", "required");
-      $this->form_validation->set_rules("status", "status", "required");
+
+      $this->form_validation->set_rules("role_id", "role_id", "required");
+      $this->form_validation->set_rules("user_id", "user_id", "required");
+
       if ($this->form_validation->run()) {
-         $username = $this->post("username");
-         $password = $this->post("password");
-         $email = $this->post("email");
-         $noHp = $this->post("noHp");
-         $status = $this->post("status");
          $data = [
-            'status' => $status,
-            "password" => $password,
-            "email" => $email,
-            "username" => $username,
-            "noHp" => $noHp
+            "role_id" => $this->post("role_id"),
+            "user_id" => $this->post("user_id"),
          ];
-         $this->db->insert("tbuser", $data);
-         $eks = hasilCUD("berhasil ditambahkan");
-         $eks->data = $data;
-         $this->response($eks, 200);
+         $userReadyAccess = $this->db->get_where("access_role_user", $data)->row();
+         if ($userReadyAccess) {
+            return   $this->response([
+               "status" => true,
+               "message" => "Role Already has Access to the User",
+               "data" => $data
+            ], 200);
+         }
+         $addedAccess = $this->db->insert("access_role_user", $data);
+         return   $this->response([
+            "status" => true,
+            "message" => "have added role access to the user",
+            "data" => $data
+         ], 200);
       } else {
          $this->response([
             "status" => false,
             "message" => "Lengkapi data anda",
             "data" => $this->form_validation->error_array()
-         ], 200);
+         ], 400);
       }
    }
-   public function index_put($id = null)
+   public function rule_delete($type, $access_id, $roleId)
    {
-      $this->response(['status' => false, 'message' => "User Tidak Dikenali.!"], 500);
+      $data = [
+         "role_id" => $roleId,
+      ];
+      if ($type == 'menu') {
+         $table = "access_menu_role";
+         $data['menu_id'] =  $access_id;
+      } elseif ($type == 'user') {
+         $table = "access_role_user";
+         $data['user_id'] =  $access_id;
+      }
+
+      $roleReadyAccess = $this->db->get_where($table, $data)->row();
+
+      if ($roleReadyAccess) {
+         $this->db->where($data)->delete($table);
+         return   $this->response([
+            "status" => true,
+            "message" => "the role access has been removed",
+            "data" => $data
+         ], 200);
+      } else {
+         $this->response([
+            "status" => false,
+            "message" => "it role access not found",
+            "data" => $data
+         ], 400);
+      }
+   }
+   public function rule_post($type)
+   {
+
+      $this->load->library("form_validation");
+      $this->form_validation->set_data($this->post());
+      $this->form_validation->set_rules("rule_id", "Rule", "required");
+      $this->form_validation->set_rules("access_id", "Access", "required");
+      $data = [
+         "role_id" => $this->post("rule_id")
+      ];
+
+      if ($type == 'menu') {
+         $table = "access_menu_role";
+         $data['menu_id'] =  $this->post("access_id");
+      } elseif ($type == 'user') {
+         $table = "access_role_user";
+         $data['user_id'] =  $this->post("access_id");
+      }
+      if ($this->form_validation->run()) {
+         $readyAccess = $this->db->get_where($table, $data)->row();
+         if ($readyAccess) {
+            return   $this->response([
+               "status" => true,
+               "message" => "Role Already has Access",
+               "data" => $data
+            ], 200);
+         }
+
+         $addedAccess = $this->db->insert($table, $data);
+         return   $this->response([
+            "status" => true,
+            "message" => "have added role access",
+            "data" => $data
+         ], 200);
+      } else {
+         $this->response([
+            "status" => false,
+            "message" => "Please complete the data first",
+            "data" => $this->form_validation->error_array()
+         ], 400);
+      }
    }
 }
