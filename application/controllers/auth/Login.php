@@ -42,10 +42,13 @@ class Login extends MY_Controller
             if ($user['status'] == 1) {
                 // cek password
                 if (password_verify($password, $user['password'])) {
+                    $token = base64_encode((random_bytes(64)));
+                    $token = strtr($token, "+-", "_");
 
+                    $this->db->update("users", ['remember_token' => $token], ['id' => $user['id']]);
                     $data = [
                         'user_login' => $user['email'],
-                        'user_token' => $user['remember_token'],
+                        'user_token' => $token,
                     ];
                     $this->session->set_userdata($data);
                     $this->session->set_flashdata('success', 'Sukses Login');

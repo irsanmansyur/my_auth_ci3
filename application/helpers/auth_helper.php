@@ -19,6 +19,8 @@ if (!function_exists('is_login')) {
 
         $user = $ci->db->get('users')->row();
         if (!$user) {
+            $ci->is_login = false;
+            $ci->is_user = null;
             return false;
         }
         $ci->is_login = true;

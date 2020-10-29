@@ -38,12 +38,14 @@
                         </ul>
                     </div>
                     <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Setting Aplikasi</div>
+                        <div class="card-header  d-flex justify-content-between">
+                            <div class="card-title"><?= $page_title; ?></div>
+                            <a href="<?= base_url('admin/setting/add'); ?>" class="btn btn-primary">Add Setting</a>
                         </div>
+                        <?= var_dump(validation_errors()); ?>
                         <form class="form form-horizontal" method="post" action="">
                             <div class="card-body">
-                                <?php foreach ($setting as $key => $val) : ?>
+                                <?php foreach ($settings as $key => $val) : ?>
                                     <?php if ($key == "theme_public" || $key == "theme_admin") { ?>
                                         <div class="form-group">
                                             <label for="<?= $key; ?>"><?= $key; ?>

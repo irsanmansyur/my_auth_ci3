@@ -51,7 +51,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
                                                     <label>Name</label>
-                                                    <input type="text" class="form-control" name="nama_user" placeholder="Name" value="<?= $user->nama_user ?? set_value('nama_user'); ?>">
+                                                    <input type="text" class="form-control" name="name" placeholder="Name" value="<?= $user->name ?? set_value('name'); ?>">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -80,7 +80,7 @@
                                             <div class="col-md-6">
                                                 <div class="form-group form-group-default">
                                                     <label>Email</label>
-                                                    <input type="email" class="form-control" name="email" placeholder="Name email" value="<?= $user->email  ??  set_value('email'); ?>">
+                                                    <input type="email" readonly class="form-control" name="email" placeholder="Name email" value="<?= $user->email  ??  set_value('email'); ?>">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -98,9 +98,8 @@
                                                     <h3>Ganti Gambar (Klik gambar di bawah)</h3>
                                                     <div class="card-avatar">
                                                         <input type="file" name="gambar" id="imagechange" class="d-none" />
-
                                                         <a href="#pablo" id="changePhoto">
-                                                            <img class="img thumbnail rounded-circle" style="width: 100px;height:100px;" src="<?= base_url('assets/mobils/default.jpg') ?>">
+                                                            <img class="img thumbnail rounded-circle" style="width: 100px;height:100px;" src="<?= base_url('assets/img/profile/' . $user->profile) ?>">
                                                         </a>
                                                     </div>
                                                 </div>
