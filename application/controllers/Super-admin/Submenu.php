@@ -23,7 +23,7 @@ class Submenu extends Admin_Controller
     ];
     $this->template->load('admin', 'super-admin/submenu/index', array_merge($data, compact(["submenus", "menu"])));
   }
-  public function  tambah($menu_id = null)
+  public function  tambah($menu_id = 878)
   {
     $submenu = $this->submenu_model;
     $menu = $this->menu_model->first($menu_id);

@@ -42,33 +42,7 @@
             </div>
             <form action="<?= $form_action_add; ?>" method="post">
               <div class="card-body">
-                <div class="form-group form-group-default">
-                  <label for="name">Submenu Name</label>
-                  <input class="form-control" id="name" placeholder="Enter name" name="name" value="<?= set_value("name") ?>" />
-                  <?= form_error('name', '<small class="text-danger">', '</small>'); ?>
-                </div>
-                <div class="form-group form-group-default">
-                  <label for="url">Submenu url</label>
-                  <input class="form-control" id="url" placeholder="Enter name" name="url" value="<?= set_value("url") ?>" />
-                  <?= form_error('url', '<small class="text-danger">', '</small>'); ?>
-                </div>
-                <div class="form-group">
-                  <label for="status">Status Select</label>
-                  <select class="form-control input-solid" name="status" id="status" required>
-                    <option value="">Select Status</option>
-                    <option <?= set_value('status') == 'public' ? "selected" : ''; ?> value="public">Public</option>
-                    <option <?= set_value('status') == 'private' ? "selected" : ''; ?> value="private">private</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="menu_id">Menu Select</label>
-                  <select class="form-control input-solid" name="menu_id" id="menu_id" required>
-                    <option value="">select Menu</option>
-                    <?php foreach ($menus as  $key => $menu) : ?>
-                      <option value="<?= $menu->id; ?>" <?= $menu->id == set_value("menu_id") ? "selected" : ''; ?>><?= $menu->name; ?></option>
-                    <?php endforeach; ?>
-                  </select>
-                </div>
+                <?php $this->load->view($thema_load . "pages/super-admin/submenu/partials/_input.php"); ?>
               </div>
               <div class="card-action">
                 <button class="btn btn-success" type="submit">Submit</button>
