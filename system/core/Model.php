@@ -148,6 +148,8 @@ class CI_Model
     }
 
     $a = $this->db->get()->row();
+    if (!$a)
+      return false;
     $b =  new $this;
     $b->_setData($a, $id);
     return  $b;
@@ -297,5 +299,15 @@ class CI_Model
     if ($rel) {
       return  $class->all($rel->COLUMN_NAME, $this->{$this->_primaryKey});
     }
+  }
+  public function group($key, $val = null)
+  {
+    if (is_string($key)) {
+      $key = [$key => $val];
+    }
+    foreach ($key as $y => $v) {
+      $this->db->group_by($y, $v);
+    }
+    return $this;
   }
 }
