@@ -27,10 +27,12 @@ defined('BASEPATH') or exit('No direct script access allowed');
         </ul>
         <div class="d-flex">
           <?php if (is_login()) : ?>
+            <a href="<?= base_url("admin/dashboard"); ?>" class="btn btn-primary mr-2">Dashboard</a>
             <a href="<?= base_url("auth/logout"); ?>" class="btn btn-danger mr-2">Logout</a>
+          <?php else : ?>
+            <a href="<?= base_url("auth"); ?>" class="btn btn-primary mr-2">Login</a>
+            <a href="<?= base_url("auth/register"); ?>" class="btn btn-secondary">Signup</a>
           <?php endif; ?>
-          <a href="<?= base_url("auth"); ?>" class="btn btn-primary mr-2">Login</a>
-          <a href="<?= base_url("auth/register"); ?>" class="btn btn-secondary">Signup</a>
         </div>
       </div>
     </div>
@@ -51,7 +53,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
         <p>The corresponding controller for this page is found at:</p>
         <code>application/controllers/Welcome.php</code>
 
-        <p>If you are exploring CodeIgniter for the very first time, you should start by reading the <a href="user_guide/">User Guide</a>.</p>
       </div>
       <div class="card-footer text-right">
         <p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <?php echo (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>

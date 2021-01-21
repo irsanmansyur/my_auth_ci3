@@ -21,9 +21,16 @@ class Test extends MY_Controller
    */
   public function index()
   {
-    $this->load->model("menu_model");
-    $menu = $this->menu_model;
-    die(var_dump($menu->getNewFields()));
-    $this->load->view('welcome_message');
+    $this->load->model("permission/User_model", "user");
+
+    $user = $this->user->first(1);
+    die(var_dump(
+
+      can("Master", "Super Admin")
+    ));
+
+
+    die(var_dump($user->views()->select("DAY(created_at) as day")->first()));;
+    die(var_dump($this->db->last_query()));
   }
 }

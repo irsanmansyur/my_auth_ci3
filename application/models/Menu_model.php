@@ -30,4 +30,8 @@ class Menu_model extends CI_Model
     $submenu = $this->submenu_model;
     return  $submenu->all($rel->COLUMN_NAME, $this->{$this->_primaryKey});
   }
+  public function roles()
+  {
+    return $this->belongsToMany("permission/Role_model", "model_id", "role_id", "model_has_role");;
+  }
 }

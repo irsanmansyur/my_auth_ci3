@@ -27,7 +27,7 @@
                                 <i class="flaticon-right-arrow"></i>
                             </li>
                             <li class="nav-item">
-                                <a href=<?= base_url('admin/user/list'); ?>>User List</a>
+                                <a href=<?= base_url('permission/user/list'); ?>>User List</a>
                             </li>
 
                             <li class="separator">
@@ -79,7 +79,7 @@
                                                     <label>Pilih level Admin</label>
                                                     <select class="form-control" id=role_id name=role_id>
                                                         <?php foreach ($roles as $role) : ?>
-                                                            <option value="<?= $role->id; ?>"><?= $role->name; ?></option>
+                                                            <option value="<?= $role->id; ?>" <?= $ ;?>  ><?= $role->name; ?></option>
                                                         <?php endforeach; ?>
                                                     </select>
                                                 </div>

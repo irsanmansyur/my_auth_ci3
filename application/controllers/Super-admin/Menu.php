@@ -8,7 +8,7 @@ class Menu extends Admin_Controller
     parent::__construct();
     if (!in_role(1))
       $this->not_permition();
-    $this->load->model("super-admin/menu_model");
+    $this->load->model("permission/menu_model");
   }
   public function index()
   {
@@ -16,7 +16,7 @@ class Menu extends Admin_Controller
     $data = [
       'page_title' => "Managemen Menu User Access",
     ];
-    $this->template->load('admin', 'super-admin/menu/index', array_merge($data, compact("menus")));
+    $this->template->load('admin', 'permission/menu/index', array_merge($data, compact("menus")));
   }
 
   public function  tambah()
@@ -31,13 +31,13 @@ class Menu extends Admin_Controller
         $this->session->set_flashdata("success", 'Menu success addet');
       else
         $this->session->set_flashdata("danger", 'Menu cannot addet');
-      redirect("super-admin/menu");
+      redirect("permission/menu");
     }
     $data = [
       'page_title' => "tambah Menu Users",
-      "form_action_add" => base_url("super-admin/menu/tambah"),
+      "form_action_add" => base_url("permission/menu/tambah"),
     ];
-    $this->template->load('admin', 'super-admin/menu/tambah', array_merge($data, compact("menu")));
+    $this->template->load('admin', 'permission/menu/tambah', array_merge($data, compact("menu")));
   }
   public function edit($id)
   {
@@ -54,13 +54,13 @@ class Menu extends Admin_Controller
         $this->session->set_flashdata("success", 'Menu success updated');
       else
         $this->session->set_flashdata("danger", 'Menu cannot updated');
-      redirect("super-admin/menu");
+      redirect("permission/menu");
     } else {
       $data = [
         'page_title' => "Edit Menu Users",
-        "form_action_edit" => base_url("super-admin/menu/edit/" . $id),
+        "form_action_edit" => base_url("permission/menu/edit/" . $id),
       ];
-      $this->template->load('admin', 'super-admin/menu/edit', array_merge($data, compact("menu")));
+      $this->template->load('admin', 'permission/menu/edit', array_merge($data, compact("menu")));
     }
   }
   public function delete($id)
