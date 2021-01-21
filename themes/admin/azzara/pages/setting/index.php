@@ -27,7 +27,9 @@
                 <i class="flaticon-right-arrow"></i>
               </li>
               <li class="nav-item">
+
                 <a href="<?= base_url('admin/dashboard'); ?>">Dashboard</a>
+
               </li>
               <li class="separator">
                 <i class="flaticon-right-arrow"></i>
@@ -46,7 +48,9 @@
               <div class="card-body">
                 <?php foreach ($settings as $key => $val) : ?>
                   <?php if ($key == "theme_public" || $key == "theme_admin") { ?>
+
                     <div class="form-group setting">
+
                       <label for="<?= $key; ?>"><?= $key; ?>
                       </label>
                       <select class="form-control" name="<?= $key; ?>" id="<?= $key; ?>">
@@ -56,6 +60,7 @@
                       </select>
                     </div>
                   <?php } elseif ($key == 'logo') { ?>
+
                     <div class="form-group  setting">
                       <label for="<?= $key; ?>">Input file Image Only</label>
                       <input type="file" class="form-control-file" name="<?= $key; ?>" id="<?= $key; ?>">
@@ -73,21 +78,21 @@
                   <?php } ?>
                 <?php endforeach; ?>
 
-
               </div>
-              <div class="card-action">
-                <button class="btn btn-success" type="submit">Submit</button>
-                <button class="btn btn-danger" type="reset">Reset</button>
-              </div>
-            </form>
-
           </div>
+          <div class="card-action">
+            <button class="btn btn-success" type="submit">Submit</button>
+            <button class="btn btn-danger" type="reset">Reset</button>
+          </div>
+          </form>
 
         </div>
-        <?php $this->load->view($thema_load . "partials/_footer.php"); ?>
+
       </div>
+      <?php $this->load->view($thema_load . "partials/_footer.php"); ?>
     </div>
-    <?php $this->load->view($thema_load . "partials/_custom_templates.php"); ?>
+  </div>
+  <?php $this->load->view($thema_load . "partials/_custom_templates.php"); ?>
   </div>
   <?php $this->load->view($thema_load . "partials/_js_files.php"); ?>
   <script src="<?= $thema_folder; ?>assets/js/plugin/sweetalert/sweetalert.min.js"></script>
@@ -145,6 +150,7 @@
       })
     })
   </script>
+
 </body>
 
 </html>

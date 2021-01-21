@@ -81,8 +81,6 @@ class Setting extends Admin_Controller
   }
 
 
-
-
   // CM_delete
   function delete_setting($id)
   {

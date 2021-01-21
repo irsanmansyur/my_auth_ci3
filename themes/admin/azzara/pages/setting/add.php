@@ -27,7 +27,9 @@
                 <i class="flaticon-right-arrow"></i>
               </li>
               <li class="nav-item">
+
                 <a href=<?= base_url('permission/setting'); ?>>List Settings</a>
+
               </li>
               <li class="separator">
                 <i class="flaticon-right-arrow"></i>
@@ -56,7 +58,9 @@
               </div>
               <div class="card-action">
                 <button class="btn btn-success" type="submit">Submit</button>
-                <button class="btn btn-danger">Cancel</button>
+
+                <button type="reset" class="btn btn-danger">Clear</button>
+
               </div>
             </form>
           </div>
