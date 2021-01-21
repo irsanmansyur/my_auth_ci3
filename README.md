@@ -18,18 +18,26 @@ Application managemen menu, user (CMS for Simple WEB)
     return true or false
 - Model
   - hasOne($model,$key)
+	
     contoh $user->hasOne("Alamat_model","user_id");
+		
     ini akan mengenmbalikan alamat berdasarkan user yg dipilih
   - hasMany($model,$keyFrom)
+	
     contoh $menu->hasMany("Submenu_model","menu_id");
+		
     ini akan mengenmbalikan Submenu berdasarkan **menu** yg dipilih
     
   - belongsTo($model, $key_from = null)
+	
     contoh $submenu->belongsTo("Menu_model","menu_id");
+		
     ini akan mengenmbalikan Menu berdasarkan **submenu** yg dipilih
     
   - belongsToMany($model, $key_from = null, $key_to = null, $table_relation = null) // Many To Many
+	
     contoh $user->belongsToMany("Role_model","user_id","role_id);
+		
     ini akan mengenmbalikan Roles berdasarkan **user** yg dipilih
 
 - Dan Lain Lain
