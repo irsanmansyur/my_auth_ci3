@@ -32,5 +32,12 @@ class Test extends MY_Controller
 
     die(var_dump($user->views()->select("DAY(created_at) as day")->first()));;
     die(var_dump($this->db->last_query()));
+
+    $isi['data'] =  $this->db->select("u_tbljeniskarya.*,u_tblbutir.namabutir,u_tbljeniskarya.jeniskarya,u_tblsumberbiaya.sumberbiaya")
+      ->from("u_tblpenelitian")
+      ->join("u_tbljeniskarya", "u_tblpenelitian.idjeniskarya=u_tbljeniskarya.idjeniskarya")
+      ->join("u_tblbutir", "u_tblbutir.idbutir=u_tblpenelitian.idbutir")
+      ->join("u_tblsumberbiaya", "u_tblsumberbiaya.idsumberbiaya=u_tblpenelitian.idsumberbiaya")
+      ->get()->result();
   }
 }
