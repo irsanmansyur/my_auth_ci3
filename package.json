@@ -1,0 +1,39 @@
+{
+  "name": "MY_MART",
+  "version": "1.0.0",
+  "description": "Application managemen menu, user (CMS for Simple WEB)",
+  "main": "index.js",
+  "scripts": {
+    
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tantangin/my_auth_ci3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tantangin/my_auth_ci3/issues"
+  },
+  "homepage": "https://github.com/tantangin/my_auth_ci3#readme",
+  "devDependencies": {
+    "@babel/preset-react": "^7.13.13",
+    "axios": "^0.21.1",
+    "eslint-friendly-formatter": "^4.0.1",
+    "laravel-mix": "^6.0.18",
+    "postcss": "^8.1.14",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "resolve-url-loader": "^3.1.2",
+    "sass": "^1.32.11",
+    "sass-loader": "^11.0.1"
+  },
+  "dependencies": {
+    "bootstrap": "^4.6.0",
+    "datatables.net-bs4": "^1.10.24",
+    "react-bootstrap": "^1.5.2",
+    "recoil": "^0.2.0",
+    "sweetalert2": "^10.16.6"
+  }
+}

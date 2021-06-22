@@ -11,8 +11,8 @@ class Setting extends Admin_Controller
   {
     if (!in_role("Super Admin"))
       return  $this->not_permition(403, "Menu Ini Khusus SUper Admin");
-
-    foreach ($this->data['settings'] as $key => $val) {
+    $settings = (object) $this->data['settings'];
+    foreach ($settings as $key => $val) {
       if ($key != 'logo' and $key != 'theme_public') {
         $this->form_validation->set_rules($key, $key, 'required');
       }
@@ -22,6 +22,23 @@ class Setting extends Admin_Controller
         $where = ['name' => $row];
         $data = ['value' => $value];
         $this->db->update("settings", $data, $where);
+      }
+
+      if ($_FILES['logo']['name']) {
+        $config['allowed_types'] = 'gif|jpg|jpeg|png';
+        $config['max_size']      = '2048';
+        $config['upload_path'] = './assets/img/setting/';
+        $this->load->library('upload', $config);
+        if ($this->upload->do_upload('logo')) {
+          if (is_file(FCPATH . 'assets/img/setting/' . $settings->logo) && $settings->logo !== 'default.jpg')
+            unlink(FCPATH . 'assets/img/setting/' . $settings->logo);
+          $settings->logo = $this->upload->data('file_name');
+          $where = ['name' => "logo"];
+          $data = ['value' =>  $settings->logo];
+          $this->db->update("settings", $data, $where);
+        } else {
+          die($this->upload->display_errors());
+        }
       }
       $this->session->set_flashdata('success', "Setting Have Updated .!");
       return back();
@@ -112,5 +129,24 @@ class Setting extends Admin_Controller
       "form_action_add" => base_url('admin/setting/add')
     ];
     $this->template->load('admin', 'setting/add', $data);
+  }
+
+  private function upload($filename = 'default.jpg')
+  {
+    if ($_FILES['logo']['name']) {
+      $config['allowed_types'] = 'gif|jpg|jpeg|png';
+      $config['max_size']      = '2048';
+      $config['upload_path'] = './assets/img/setting/';
+      $this->load->library('upload', $config);
+      if ($this->upload->do_upload('logo')) {
+        if (is_file(FCPATH . 'assets/img/setting/' . $filename) && $filename != 'default.jpg')
+          unlink(FCPATH . 'assets/img/setting/' . $filename);
+
+        $filename = $this->upload->data('file_name');
+      } else {
+        echo $this->upload->display_errors();
+      }
+    }
+    return $filename;
   }
 }

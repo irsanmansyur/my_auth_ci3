@@ -44,7 +44,7 @@
               <div class="card-title"><?= $page_title; ?></div>
               <a href="<?= base_url('admin/setting/add'); ?>" class="btn btn-primary">Add Setting</a>
             </div>
-            <form class="form form-horizontal" method="post" action="">
+            <form class="form form-horizontal" method="post" action="" enctype="multipart/form-data">
               <div class="card-body">
                 <?php foreach ($settings as $key => $val) : ?>
                   <?php if ($key == "theme_public" || $key == "theme_admin") { ?>

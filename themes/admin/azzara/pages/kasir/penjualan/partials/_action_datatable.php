@@ -1,0 +1,1 @@
+<a type="button" href="<?= base_url("kasir/penjualan/details/" . $penjualan->id); ?>" class="btn btn-secondary btn-sm btn-border details-control" style="margin-bottom: 2px;" data-toggle="tooltip" data-placement="right" title="Details"><i class="fas fa-info-circle"></i></a>

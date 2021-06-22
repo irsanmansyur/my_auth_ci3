@@ -40,13 +40,15 @@
     path.indexOf("index.php") > 0 ? [console.log("Ada  index"), path = path.replace("/index.php", "")] : console.log("tdk ada index");
     path = path.toLowerCase().toString();
 
-    let elLinkSubmenus = document.querySelectorAll(`li.s-menu>a[href="${path}"],a[href="${path}"]`);
+    let elLinkSubmenus = document.querySelectorAll(`li.s-menu>a`);
     elLinkSubmenus.forEach(elLinkSubmenu => {
-      elLinkSubmenu.closest("li") && elLinkSubmenu.closest("li").classList.add("active");
-      elLinkSubmenu.closest(".collapse") && elLinkSubmenu.closest(".collapse").classList.add("show");
-      elLinkSubmenu.closest(".nav-item") && elLinkSubmenu.closest(".nav-item").classList.add('active', 'submenu');
+      let link = elLinkSubmenu.getAttribute("href");
+      if (link.toLowerCase().toString() == path) {
+        elLinkSubmenu.closest("li") && elLinkSubmenu.closest("li").classList.add("active");
+        elLinkSubmenu.closest(".collapse") && elLinkSubmenu.closest(".collapse").classList.add("show");
+        elLinkSubmenu.closest(".nav-item") && elLinkSubmenu.closest(".nav-item").classList.add('active', 'submenu');
+      }
     });
-
 
   })
 

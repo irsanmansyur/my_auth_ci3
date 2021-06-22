@@ -1,0 +1,4 @@
+<a type="button" href="<?= base_url("admin/barang/pdf_/print_view/" . $barang->id); ?>" class="btn btn-secondary btn-sm btn-border pdf_print-barang" style="margin-bottom: 2px;" data-toggle="tooltip" data-placement="right" title="Print Barang"><i class="fas fa-print"></i></a>
+<button class="btn btn-sm btn-primary btn-border btn-show_barcode" style="margin-bottom: 2px;" data-toggle="tooltip" data-placement="right" title="Lihat Barcode"><i class="fas fa-barcode"></i></button>
+<a type="button" href="<?= base_url("admin/barang/edit/index/" . $barang->id); ?>" class="btn btn-success btn-sm rounded edit-barang" style="margin-bottom: 2px;"><i class="far fa-edit"></i></a>
+<a href="<?= base_url("admin/barang/data/delete/" . $barang->id); ?>" class="delete btn btn-danger btn-sm rounded" style="margin-bottom: 2px;"><i class="fas fa-trash"></i></a>

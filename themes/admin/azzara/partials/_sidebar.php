@@ -37,7 +37,7 @@
        </div>
 
        <ul class="nav">
-         <li class="nav-item">
+         <li class="nav-item s-menu">
            <a href="<?= base_url('admin/dashboard'); ?>">
              <i class="fas fa-home"></i>
              <p>Dashboard</p>
@@ -46,24 +46,33 @@
          </li>
 
          <?php foreach ($user->menus as  $menu) : ?>
-           <li class="nav-item menu">
-             <a data-toggle="collapse" href="#<?= $menu->name ?>">
-               <i class="fas fa-layer-group"></i>
-               <p><?= $menu->name; ?></p>
-               <span class="caret"></span>
-             </a>
-             <div class="collapse" id="<?= $menu->name; ?>">
-               <ul class="nav nav-collapse">
-                 <?php foreach ($menu->submenus as $submenu) : ?>
-                   <li class="s-menu">
-                     <a href="<?= base_url($submenu->url); ?>">
-                       <span class="sub-item"><?= $submenu->name; ?></span>
-                     </a>
-                   </li>
-                 <?php endforeach; ?>
-               </ul>
-             </div>
-           </li>
+           <?php if (!$menu->url) : ?>
+             <li class="nav-item menu">
+               <a data-toggle="collapse" href="#<?= $menu->name ?>">
+                 <i class="fas fa-layer-group"></i>
+                 <p><?= $menu->name; ?></p>
+                 <span class="caret"></span>
+               </a>
+               <div class="collapse" id="<?= $menu->name; ?>">
+                 <ul class="nav nav-collapse">
+                   <?php foreach ($menu->submenus as $submenu) : ?>
+                     <li class="s-menu">
+                       <a href="<?= base_url($submenu->url); ?>">
+                         <span class="sub-item"><?= $submenu->name; ?></span>
+                       </a>
+                     </li>
+                   <?php endforeach; ?>
+                 </ul>
+               </div>
+             </li>
+           <?php else : ?>
+             <li class="nav-item s-menu">
+               <a href="<?= base_url($menu->url); ?>">
+                 <?= $menu->icon ?? '<i class="fas fa-home"></i>'; ?>
+                 <p><?= $menu->name; ?></p>
+               </a>
+             </li>
+           <?php endif; ?>
          <?php endforeach; ?>
        </ul>
      </div>

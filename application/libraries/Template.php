@@ -98,6 +98,13 @@ class Template
 
     return $this->ci->load->view("../../themes/{$template}/{$theme}/pages/" . $page,       array_merge($this->template_data, $this->ci->data, $data), $return);
   }
+  public function view($template = '', $page = '', $data = array(), $return = FALSE)
+  {
+    // membaca jenis template dan nama tema
+    $theme = $this->readTheme($template);
+
+    return $this->ci->load->view("../../themes/{$template}/{$theme}/pages/" . $page,         $data, $return);
+  }
   // pendukun load
   function set_content($name, $value)
   {

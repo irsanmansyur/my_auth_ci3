@@ -44,7 +44,6 @@ class Profile extends Admin_Controller
       if ($this->upload->do_upload('gambar')) {
         if (is_file(FCPATH . 'assets/img/profile/' . $filename) && $filename != 'default.jpg')
           unlink(FCPATH . 'assets/img/profile/' . $filename);
-
         $filename = $this->upload->data('file_name');
       } else {
         echo $this->upload->display_errors();

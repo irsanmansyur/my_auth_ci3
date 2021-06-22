@@ -15,9 +15,10 @@ class MY_Model extends CI_Model
 
   private $_primaryKey = null;
 
-  public function __construct()
+  public function __construct($type = null)
   {
-    $this->_setFields();
+    if (!$type)
+      $this->_setFields();
   }
 
 
@@ -29,18 +30,24 @@ class MY_Model extends CI_Model
       $model =  $this->{$key}();
       if ($model->__type === "all")
         return  $this->{$key} = $model->all();
-      return  $this->{$key} = $model->first();
+      else if ($model->__type === "first") {
+        return  $this->{$key} = $model->first();
+      }
     }
 
     return get_instance()->$key;
   }
   public function __call($name, $params)
   {
-
     if (!method_exists($this, $name) && method_exists(get_instance()->db, $name)) {
-      get_instance()->db->{$name}($params[0] ?? null, $params[1] ?? null, $params[2] ?? null);
+      $hasil = get_instance()->db->{$name}($params[0] ?? null, $params[1] ?? null, $params[2] ?? null);
       return $this;
     }
+  }
+
+  public function count()
+  {
+    return $this->db->count_all_results($this->_table);
   }
 
 
@@ -56,10 +63,12 @@ class MY_Model extends CI_Model
         "fields" => $fields,
         "key" => $eks->Column_name,
       ];
-
+      $default = [];
       foreach ($fields  as $value) {
         $this->{$value} =  null;
+        $default[$value]  = null;
       }
+      $this->default = (object) $default;
     }
   }
 
@@ -89,7 +98,7 @@ class MY_Model extends CI_Model
 
   public function  all($key = null, $val = null)
   {
-    $this->db->select($this->_table . ".*");
+    $this->db->select($this->_table . ".*", $this->_table . $this->getTable("key"));
 
     $this->db->from($this->getTable("name"));
     if (is_int($key))
@@ -98,10 +107,11 @@ class MY_Model extends CI_Model
       $this->where($key, $val);
 
     $all = $this->db->get()->result();
-
+    $ci = get_instance();
+    $ci->last_query = $this->db->last_query();
     $a = [];
     foreach ($all as $row => $value) {
-      $b =  new $this;
+      $b =  new $this(true);
       $b->setOutput($value);
       // $this->__setMethod($b);
       $a[] = $b;
@@ -118,17 +128,23 @@ class MY_Model extends CI_Model
 
   public function first($id = [], $val = null)
   {
+    $key = (string) $this->getTable("key");
+
     $this->db->select($this->_table . ".*");
     $this->db->from($this->_table);
 
     if (is_numeric($id)) {
-      $this->where($this->_table . "." . $this->_primaryKey, $id);
+      $this->where($this->_table . "." . $key, $id);
     } elseif ($id && $id !== "_newFields") {
       $this->where($id, $val);
     } elseif (is_null($id)) {
       return false;
     }
+    if (!is_numeric($id) && $this->$key != $this->default->$key) {
+      $this->where($this->getTable('name') . "." . $key, $this->$key);
+    }
 
+    $this->db->limit(1);
     $a = $this->db->get()->row();
     if (!$a)
       return false;
@@ -138,8 +154,9 @@ class MY_Model extends CI_Model
     return  $b;
   }
 
-  private function setOutput(object $data)
+  private function setOutput($data)
   {
+    $this->default  = (object) $data;
     foreach ($data as $key => $value) {
       $this->{$key} = $value;
     }
@@ -149,13 +166,18 @@ class MY_Model extends CI_Model
   private function setInput(array $data)
   {
     $data = array_merge((array) $this, $data);
+
     $dt = [];
     foreach ($this->__table['fields'] as $value) {
       if (array_key_exists($value, $data) &&  $data[$value] !== null) {
-        $dt[$value] =  $data[$value];
-        $this->{$value} =  $data[$value];
+
+        if (!isset($this->default) ||  $this->default->{$value}  !=  $data[$value]) {
+          $dt[$value] =  $data[$value];
+          $this->{$value} =  $data[$value];
+        }
       }
     }
+
     return $dt;
   }
   private function _setData($data, $type = null)
@@ -185,11 +207,26 @@ class MY_Model extends CI_Model
   }
   public function getTable($key = null)
   {
+    $table = isset($this->__table['name']) ? $this->__table['name'] : "";
+    if ($this->_table !== $table)
+      $this->_setFields();
+
     if ($key && isset($this->__table[$key]))
       return $this->__table[$key];
     return $this->__table;
   }
 
+  public function __beforeDelete($data)
+  {
+    $data = (array) $data;
+    if (isset($this->_beforeDelete))
+      foreach ($this->_beforeDelete as $value) {
+        if (method_exists($this, $value)) {
+          $data =  $this->{$value}($data);
+        }
+      }
+    return $data;
+  }
   public function __beforeInput($data)
   {
 
@@ -231,18 +268,17 @@ class MY_Model extends CI_Model
         if (isset($array_unique[1]) && isset($this->{$array_unique[1]})) {
           $pengecuali =  $array_unique[1];
         } else
-          $pengecuali = $this->_primaryKey;
+          $pengecuali = $this->getTable("key");
+
 
         $rule_unique = "|is_unique[{$tabel}.{$unique}]";
 
 
-        if ($this->{$pengecuali} || $this->input->post($pengecuali)) {
-          $modalKetemu =  $this->db->where($pengecuali, $this->input->post($pengecuali))->get($tabel)->row();
+
+        if (isset($this->default) && $this->default->{$rule['field']} == $this->input->post($rule['field']))
+          $rule_unique = "";
 
 
-          if (!$modalKetemu || $this->input->post($pengecuali) == $this->{$pengecuali})
-            $rule_unique = "";
-        }
 
         $rule["rules"] .= $rule_unique;
         unset($rule["unique"]);
@@ -259,23 +295,10 @@ class MY_Model extends CI_Model
         return $filtered;
       } elseif (array_key_exists("allowed", $type)) {
         $allowed  =  $type['allowed'];
-        $filtered = array_filter(
-          $filtered,
-          function ($key) use ($allowed) {
-            return in_array($key, $allowed);
-          },
-          ARRAY_FILTER_USE_KEY
-        );
-        return $filtered;
-      } elseif (array_key_exists("allowed", $type)) {
-        $allowed  =  $type['allowed'];
-        $filtered = array_filter(
-          $filtered,
-          function ($key) use ($allowed) {
-            return in_array($key, $allowed);
-          },
-          ARRAY_FILTER_USE_KEY
-        );
+        foreach ($filtered as $key => $val) {
+          if (!in_array($val['field'], $allowed))
+            unset($filtered[$key]);
+        }
         return $filtered;
       }
     } else if (is_string($type)) {
@@ -289,7 +312,10 @@ class MY_Model extends CI_Model
 
   public function save(array $post = [])
   {
-    count($post) < 1  && $post = $this->input->post();
+    $this->db->reset_query();
+
+    $this->getLastId("id", "");
+    $post = array_merge($this->input->post(), $post);
 
     $dataFarsing = $this->setInput($post);
     $dataBeforeInput = $this->__beforeInput($dataFarsing);
@@ -300,6 +326,7 @@ class MY_Model extends CI_Model
     if ($this->db->affected_rows() < 1) {
       return false;
     }
+    $this->setOutput($dataBeforeInput);
     return $this;
   }
   public function update(array $post = [], array $where = null)
@@ -313,10 +340,12 @@ class MY_Model extends CI_Model
       $this->where($where);
 
     $dataFarsing = $this->setInput($post);
+
     $dataBeforeInput = $this->__beforeInput($dataFarsing);
 
 
-    $this->db->update($this->__table['name'], $dataBeforeInput);
+    if (count($dataBeforeInput) > 0)
+      $this->db->update($this->__table['name'], $dataBeforeInput);
 
     return $this;
   }
@@ -324,12 +353,20 @@ class MY_Model extends CI_Model
   protected   $__afterDelete = [];
   public function delete($id = null)
   {
-    if (isset($this->{$this->getTable("key")})) {
-      $this->where($this->getTable("key"), $this->{$this->getTable("key")});
+    $default = $this->default ?? null;
+    $keyName = $this->getTable("name") . "." . $this->getTable("key");
+    $keyValue = $default->{$this->getTable("key")};
+
+    if ($id) {
+      $this->db->where($keyName, $id);
+    } else {
+      if ($default &&  $keyValue) {
+        $this->db->where($keyName, $keyValue);
+      }
     }
+    $this->__beforeDelete($this);
 
-
-    $delete = $this->db->delete($this->__table['name']);
+    $delete = $this->db->delete($this->getTable('name'));
 
     if ($this->db->affected_rows() > 0) {
       foreach ($this->__afterDelete as $func) {
@@ -343,7 +380,7 @@ class MY_Model extends CI_Model
   private function _clear()
   {
   }
-  protected function getLastId($unique = "id", $string = "id-")
+  public function getLastId($unique = "id", $string = "id-")
   {
     $this->db->select_max($unique);
     $this->db->from($this->_table)->order_by($this->_primaryKey, 'desc');
@@ -376,29 +413,17 @@ class MY_Model extends CI_Model
       }
     }
 
-    // Create an exception 
-    $ex = new Exception();
-    $trace = $ex->getTrace();
-    $final_call = $trace[1];
-
-
-    if (isset($this->{$final_call["function"]})) {
-      if (isset($trace[2]) && $trace[2]["function"] == "__get" && $trace["args"][0] == $final_call["function"])
-        return $this->{$final_call["function"]};
-    }
-
-
     if (!property_exists($has, $key_child)) {
-      $this->{$final_call["function"]} = $has;
       $has->_status = "Not Relation please set Relation";
       return $has;
     }
 
-    $result = $has->where($key_child, $parent->{$parent->_primaryKey})->first();
+    $has->__type = "first";
+    $has->{$key_child} = $parent->{$parent->getTable("key")};
 
-    $this->{$final_call["function"]} = $result ? $result : $has;
+    $has->where($key_child, $parent->{$parent->_primaryKey});
 
-    return    $this->{$final_call["function"]};
+    return    $has;
   }
 
   protected function belongsTo($model, $key_from = null, $key_to = null)
@@ -436,9 +461,10 @@ class MY_Model extends CI_Model
       $this->{$final_call["function"]} = $parent;
       $parent->_status = "Not Relation please set Relation";
       return $parent;
-    } else
-      $this->{$final_call["function"]} =  $parent->first($children->{$key_from}) ?? $parent;
-    $parent = $this->{$final_call["function"]};
+    } else {
+      $parent->{$parent->getTable("key")} = $children->{$key_from};
+    }
+
     $parent->__type = "first";
     return $parent;
   }
@@ -477,7 +503,10 @@ class MY_Model extends CI_Model
     if ($table_relation === null)
       $table_relation = implode("_", $all_table);
 
+    $this->db->reset_query();
     $toModel->db->join($table_relation, $table_relation . "." . $key_to . "=" . $toModel->_table . "." . $toModel->_primaryKey);
+
+    //mencocokkan data tabel sebelumnya 
     $this->db->where("{$table_relation}.$key_from", $fromModel->{$fromModel->_primaryKey});
 
     $toModel->__tableRelation = $table_relation;
@@ -496,15 +525,14 @@ class MY_Model extends CI_Model
 
     $modelFrom = $this->__modelFrom;
 
-    $modelRelation->where($this->__keyFrom, (string) $modelFrom->{$modelFrom->_primaryKey});
 
-
-    $modelRelation->delete();
-
-
-    if (!is_array($idInput)) {
-      $idInput = ["" . $idInput => $attr];
-    }
+    $idFrom = (string) $modelFrom->{$modelFrom->_primaryKey};
+    $this->db->reset_query();
+    $this->db->from($modelRelation->getTable("name"))
+      ->where($this->__keyFrom, (string) $modelFrom->{$modelFrom->_primaryKey});
+    if (count($attr) > 0)
+      $this->db->where($attr);
+    $this->db->delete();
 
     $this->attach($idInput, $attr);
 
@@ -532,8 +560,10 @@ class MY_Model extends CI_Model
       if ($attr && is_array($attr))
         $data = array_merge($data, $attr);
       $data = array_merge($data, $dataDefault);
+
       $modelRelation->save($data);
     }
+
     return $modelRelation;
   }
 

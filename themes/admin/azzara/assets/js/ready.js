@@ -307,10 +307,3 @@ $('.form-floating-label .form-control').keyup(function () {
   }
 })
 
-
-let elDismiss = document.querySelectorAll(`[data-notify='dismiss']`);
-elDismiss.forEach(disMe => {
-  disMe.addEventListener("click", function (e) {
-    disMe.closest(".alert") && disMe.closest(".alert").remove();
-  })
-})

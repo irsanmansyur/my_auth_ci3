@@ -100,3 +100,116 @@ function rupiah($angka)
   $hasil_rupiah = "Rp " . number_format($angka, 2, ',', '.');
   return $hasil_rupiah;
 }
+
+
+if (!function_exists('old')) {
+  function old(string $name, $default = '')
+  {
+    $ci = get_instance();
+    $val = $name . "_val:";
+
+    if (set_value($name, $default) != $default)
+      return set_value($name, $default);
+
+    if ($ci->session->flashdata($val)) {
+      return $ci->session->flashdata($val);
+    }
+    return $default;
+  }
+}
+if (!function_exists('hasError')) {
+  function hasError(string $name, $del = '', $enddel = '')
+  {
+    $ci = get_instance();
+    $error = $name . "_er:";
+    if (form_error($name, $del, $enddel))
+      return form_error($name, $del, $enddel);
+
+    if ($ci->session->flashdata($error)) {
+      return $del . $ci->session->flashdata($error) . $enddel;
+    }
+    return "";
+  }
+}
+if (!function_exists('setError')) {
+  function setError(string $str, $message = '')
+  {
+    $ci = get_instance();
+    $name = $str . "_er:";
+    $val = $str . "_val:";
+    if (isset($_POST[$str]))
+      $ci->session->set_flashdata($val, $_POST[$str]);
+    $ci->session->set_flashdata($name, $message);
+  }
+}
+if (!function_exists('setErrors')) {
+  function setErrors(array $errors)
+  {
+    foreach ($errors as $err => $msg) {
+      setError($err, $msg);
+    }
+  }
+}
+
+
+function _ago($datetime, $full = false)
+{
+  $now = new DateTime;
+  $ago = new DateTime($datetime);
+  $diff = $now->diff($ago);
+
+  $diff->w = floor($diff->d / 7);
+  $diff->d -= $diff->w * 7;
+
+  $string = array(
+    'y' => 'year',
+    'm' => 'month',
+    'w' => 'week',
+    'd' => 'day',
+    'h' => 'hour',
+    'i' => 'minute',
+    's' => 'second',
+  );
+  foreach ($string as $k => &$v) {
+    if ($diff->$k) {
+      $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+    } else {
+      unset($string[$k]);
+    }
+  }
+
+  if (!$full) $string = array_slice($string, 0, 1);
+  return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
+function indonesia_day($date)
+{
+  $hari = date("D", strtotime($date));
+  switch ($hari) {
+    case 'Sun':
+      $hari_ini = "Minggu";
+      break;
+    case 'Mon':
+      $hari_ini = "Senin";
+      break;
+    case 'Tue':
+      $hari_ini = "Selasa";
+      break;
+    case 'Wed':
+      $hari_ini = "Rabu";
+      break;
+    case 'Thu':
+      $hari_ini = "Kamis";
+      break;
+    case 'Fri':
+      $hari_ini = "Jumat";
+      break;
+    case 'Sat':
+      $hari_ini = "Sabtu";
+      break;
+    default:
+      $hari_ini = "Tidak di ketahui";
+      break;
+  }
+  return $hari_ini;
+}

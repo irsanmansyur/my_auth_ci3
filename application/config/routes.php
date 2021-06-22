@@ -53,6 +53,7 @@ $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+$route['admin/kasir/invoice/(:any)'] = 'admin/kasir/invoice/index/$1'; // Example 4
 
 $route["auth"] = "auth/login";
 /*

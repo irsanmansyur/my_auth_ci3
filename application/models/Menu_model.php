@@ -1,7 +1,8 @@
+
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Menu_model extends CI_Model
+class Menu_model extends MY_Model
 {
   protected $_table = 'menus';
   protected $_rules = [

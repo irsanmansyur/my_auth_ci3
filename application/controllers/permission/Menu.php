@@ -122,6 +122,7 @@ class Menu extends Admin_Controller
     try {
       $roleId = $this->input->post("role_id");
       $role = $menu->roles()->first($roleId);
+
       if (!$role) {
         $menu->roles()->attach($roleId, ['model_type' => get_class($menu)]);
       } else {

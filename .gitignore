@@ -38,3 +38,4 @@ core/*
 *.sublime-project
 /tests/tests/
 /tests/results/
+node_modules

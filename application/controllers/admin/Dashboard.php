@@ -6,30 +6,36 @@ class Dashboard extends Admin_Controller
   public function __construct()
   {
     parent::__construct();
+    $this->load->model(["Barang_model" => "barang", "Suplier_model" => "suplier", "Restok_model" => "restok", "Kategori_model" => "kategori", "Penjualan_model" => "penjualan"]);
   }
 
   function index()
   {
-    if (in_role([1, "Super Admin"]))
-      return  $this->super_admin();
-    elseif (in_role("admin", true)) {
+    if (in_role([1, "Super Admin", "admin"]))
+      return  $this->admin();
+    elseif (in_role("admin", true))
       $this->admin();
-    } elseif (count(user()->roles) < 1)
+    elseif (in_role("kasir", true))
+      return redirect("kasir/dashboard");
+    elseif (count(user()->roles) < 1)
       $this->userNotRole();
   }
 
-  private function super_admin()
+  private function admin()
   {
-
-    $countUser = $this->db->count_all_results("users");
     $chartUserVisit = $this->countUserVisit();
+    $jumlah_jenis_barang = $this->barang->jumlah_barang();
+    $jumlah_suplier = $this->suplier->count();
+    $jumlah_kategori = $this->kategori->count();
+    $jumlah_pelanggan = $this->user->jumlah_pelanggan();
 
-
+    $chart_pendapatan_harian = $this->pendapatan_harian();
     $data = [
-      'page_title' => "Dashboard Super Admin",
+      'page_title' => "Selamat datang " . user()->name,
     ];
-    $this->template->load('admin', 'dashboard/super-admin', array_merge($data, compact("countUser", "chartUserVisit")));
+    $this->template->load('admin', 'dashboard/admin', array_merge($data, compact("jumlah_jenis_barang", "jumlah_pelanggan", "jumlah_kategori", "jumlah_suplier", "chartUserVisit", "chart_pendapatan_harian")));
   }
+
   private function countUserVisit()
   {
     $this->load->model("View_model", "view");
@@ -62,19 +68,43 @@ class Dashboard extends Admin_Controller
 
     return $chartUserVisit;
   }
+  private function pendapatan_harian()
+  {
+    $countDay = date("t");
+    $bulan = date("m");
+    $bulan_ini = $this->penjualan->pendapatan_harian($bulan);
+    $bulan_kemarin = $this->penjualan->pendapatan_harian($bulan < 2 ? 12 : $bulan - 1, $bulan < 2 ? date("Y") - 1 : null);
+
+    $chart_pendapatan_harian = [];
+    for ($i = 01; $i <= $countDay; $i++) {
+      $this->i = (string) $i;
+      $pendapatan_bulan_ini = array_column(array_filter($bulan_ini, function ($view) {
+        if ($this->i == $view->day) {
+          return $view;
+        }
+      }), "count");
+
+      $pendapatan_bulan_kemarin = array_column(array_filter($bulan_kemarin, function ($view) {
+        if ($this->i == $view->day) {
+          return $view;
+        }
+      }), "count");
+      $chart_pendapatan_harian[] = [
+        "day" =>  $this->i,
+        "day_name" => indonesia_day(date("Y-m-" . $this->i)),
+        "bulan_ini" => isset($pendapatan_bulan_ini[0]) ? $pendapatan_bulan_ini[0] : 0,
+        "bulan_kemarin" => isset($pendapatan_bulan_kemarin[0]) ? $pendapatan_bulan_kemarin[0] : 0,
+      ];
+    }
+
+    return $chart_pendapatan_harian;
+  }
   private function userNotRole()
   {
     $chartUserVisit = $this->countUserVisit();
+
     $data = [
       'page_title' => "Selamat datang " . user()->name,
-    ];
-    $this->template->load('admin', 'dashboard/no-role', array_merge($data, compact("chartUserVisit")));
-  }
-  private function admin()
-  {
-    $chartUserVisit = $this->countUserVisit();
-    $data = [
-      'page_title' => "Hay Admin, Selamat datang " . user()->name,
     ];
     $this->template->load('admin', 'dashboard/no-role', array_merge($data, compact("chartUserVisit")));
   }
