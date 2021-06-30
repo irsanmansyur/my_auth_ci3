@@ -101,19 +101,26 @@ class Data extends Admin_Controller
     $params =  $this->params_datatable();
     if ($this->input->get_post("stok"))
       $params['where'] = ["stok >" => "0"];
-    $barangs = $this->barang->get_data($params);
+
+    $barangs = $this->barang->harga_khusus()->get_data($params);
+
     $recordsFiltered = $this->barang->search_and_order($params)->count();
     foreach ($barangs as $i => $barang) {
       $barangs[$i]->urut = isset($params['order']) &&  $params['order'][1] == "desc" ? $recordsFiltered - $params['start'] - $i : $params['start'] + $i + 1;
       $barangs[$i]->kode =   $barang->kode;
       $barangs[$i]->text =   $barang->kode . " || " . $barang->nama . " | " . $barang->stok;
-      $barangs[$i]->harga_jual = rupiah($barang->harga_jual);
+      $barangs[$i]->harga_jual = rupiah(isset($barang->harga_jual_khusus) ? $barang->harga_jual_khusus : $barang->harga_jual);
       $barangs[$i]->harga_beli = rupiah($barang->harga_beli);
       $barangs[$i]->tanggal_kadaluarsa =  date("d F Y", strtotime($barang->expired_at));
       $barangs[$i]->dibuat_pada =  _ago($barang->created_at);
       $barangs[$i]->action = $this->template->view('admin', 'master/barang/partials/_action_datatable', [
         "barang" => $barang
       ], true);
+      if ($this->input->post("pilih_barang"))
+        $barangs[$i]->pilih = $this->template->view('admin', 'master/barang/partials/_action_pilih_barang', [
+          "barang" => $barang
+        ], true);
+
 
       $with = $this->input->get_post("with");
       if ($with) {

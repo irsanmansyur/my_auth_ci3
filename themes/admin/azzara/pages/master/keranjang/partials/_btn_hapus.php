@@ -1,0 +1,1 @@
+<button class="btn btn-danger btn-border btn-sm btn-hapus"><i class="fas fa-trash-alt"></i></button>

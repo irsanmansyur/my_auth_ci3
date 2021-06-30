@@ -18,16 +18,16 @@
             <h4 class="page-title"><?= $page_title; ?></h4>
           </div>
           <div class="row">
-            <div class="col-sm-6 col-md-3  col-6">
+            <div class="col-sm-6 col-md-3 col-6">
               <div class="card card-stats card-round">
                 <div class="card-body ">
                   <div class="row align-items-center">
-                    <div class="col-icon">
+                    <div class="col-icon ml-2 ml-md-3">
                       <div class="icon-big text-center icon-primary bubble-shadow-small">
                         <i class="fas fa-box"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats col col-stats ml-1 ml-md-3 pl-1 pl-md-2">
                       <div class="numbers">
                         <p class="card-category">Jenis Barang</p>
                         <h4 class="card-title"><?= $jumlah_jenis_barang; ?></h4>
@@ -37,16 +37,16 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6 col-md-3  col-6">
+            <div class="col-sm-6 col-md-3 col-6">
               <div class="card card-stats card-round">
                 <div class="card-body">
                   <div class="row align-items-center">
-                    <div class="col-icon">
+                    <div class="col-icon ml-2 ml-md-3">
                       <div class="icon-big text-center icon-success bubble-shadow-small">
                         <i class="fas fa-layer-group"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats col col-stats ml-1 ml-md-3 pl-1 pl-md-2">
                       <div class="numbers">
                         <p class="card-category">Kategori Barang</p>
                         <h4 class="card-title"><?= $jumlah_kategori; ?></h4>
@@ -56,16 +56,16 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6 col-md-3  col-6">
+            <div class="col-sm-6 col-md-3 col-6">
               <div class="card card-stats card-round">
                 <div class="card-body">
                   <div class="row align-items-center">
-                    <div class="col-icon">
+                    <div class="col-icon ml-2 ml-md-3">
                       <div class="icon-big text-center icon-info bubble-shadow-small">
                         <i class="fas fa-people-carry"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats col col-stats ml-1 ml-md-3 pl-1 pl-md-2">
                       <div class="numbers">
                         <p class="card-category">Sulpliers</p>
                         <h4 class="card-title"><?= $jumlah_suplier; ?></h4>
@@ -75,16 +75,16 @@
                 </div>
               </div>
             </div>
-            <div class="col-sm-6 col-md-3  col-6">
+            <div class="col-sm-6 col-md-3 col-6">
               <div class="card card-stats card-round">
                 <div class="card-body">
                   <div class="row align-items-center">
-                    <div class="col-icon">
+                    <div class="col-icon ml-2 ml-md-3">
                       <div class="icon-big text-center icon-secondary bubble-shadow-small">
                         <i class="fas fa-user-check"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats col col-stats ml-1 ml-md-3 pl-1 pl-md-2">
                       <div class="numbers">
                         <p class="card-category">Pelanggan Terdaftar</p>
                         <h4 class="card-title"><?= $jumlah_pelanggan; ?></h4>

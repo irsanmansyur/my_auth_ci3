@@ -18,7 +18,7 @@ class MY_Model extends CI_Model
   public function __construct($type = null)
   {
     if (!$type)
-      $this->_setFields();
+      $this->_setTables();
   }
 
 
@@ -51,13 +51,15 @@ class MY_Model extends CI_Model
   }
 
 
+
   private $__table;
-  private function _setFields()
+  private function _setTables()
   {
     if ($this->db->table_exists($this->_table)) {
       $eks  = $this->db->query("SHOW KEYS FROM $this->_table WHERE Key_name = 'PRIMARY'")->row();
       $this->_primaryKey = $eks->Column_name;
       $fields = $this->db->list_fields($this->_table);
+
       $this->__table = [
         "name" => $this->_table,
         "fields" => $fields,
@@ -112,7 +114,7 @@ class MY_Model extends CI_Model
     $a = [];
     foreach ($all as $row => $value) {
       $b =  new $this(true);
-      $b->setOutput($value);
+      $b->setOutput($value, $this);
       // $this->__setMethod($b);
       $a[] = $b;
     }
@@ -154,12 +156,21 @@ class MY_Model extends CI_Model
     return  $b;
   }
 
-  private function setOutput($data)
+  private function setOutput($data, $model_active = null)
   {
+
     $this->default  = (object) $data;
+    $pivot = null;
     foreach ($data as $key => $value) {
-      $this->{$key} = $value;
+      if ($model_active && isset($model_active->__pivot) && in_array($key, $model_active->__pivot)) {
+        $pivot[str_replace("pv_", "", $key)] = $value;
+      } else
+        $this->{$key} = $value;
     }
+    if ($pivot)
+      $this->pivot = (object) $pivot;
+    if (isset($model_active->parent))
+      $this->parent = $model_active->parent;
     return $this;
   }
 
@@ -209,7 +220,7 @@ class MY_Model extends CI_Model
   {
     $table = isset($this->__table['name']) ? $this->__table['name'] : "";
     if ($this->_table !== $table)
-      $this->_setFields();
+      $this->_setTables();
 
     if ($key && isset($this->__table[$key]))
       return $this->__table[$key];
@@ -515,7 +526,6 @@ class MY_Model extends CI_Model
     $toModel->__KeyTo = $key_to;
     $toModel->__keyFrom = $key_from;
 
-
     return  $toModel;
   }
 
@@ -564,11 +574,12 @@ class MY_Model extends CI_Model
       $modelRelation->save($data);
     }
 
-    return $modelRelation;
+    return $this->__tableRelation;
   }
 
   public function detach($idInput = null, array $dataDefault = [])
   {
+
     if (!is_array($idInput) && $idInput !== null) {
       $idInput = ["" . $idInput => $dataDefault];
     }
@@ -587,8 +598,6 @@ class MY_Model extends CI_Model
         $data =  [
           $this->__KeyTo => $id
         ];
-
-
         if ($no === 0)
           $this->db->where($data);
         else
@@ -607,7 +616,13 @@ class MY_Model extends CI_Model
       return  $class->all($rel->COLUMN_NAME, $this->{$this->_primaryKey});
     }
   }
-  protected function hasMany($model, $keyFrom = null)
+  /**
+   * Functiondescription
+   * @author Irsan Mansyur
+   * @param string $keyFrom Masukkan nama kolum relasi dari $model Contoh (model_id/kode_model)
+   * @param string $key_relation Masukkan nama kolum relasi Contoh (id/kode_model)
+   **/
+  protected function hasMany($model, $keyFrom = null, $key_relation = null)
   {
     if (is_string($model)) {
       $model = setModel($model);
@@ -625,13 +640,38 @@ class MY_Model extends CI_Model
         $keyFrom = substr_replace($fromModel->_table, "", -1) . "_id";
       }
     }
+    if (!$key_relation || is_null($key_relation)) {
+      $key_relation = $fromModel->getTable("key");
+    }
 
-
-    $toModel->where($keyFrom, $fromModel->{$fromModel->_primaryKey});
+    $toModel->where($keyFrom, $fromModel->{$key_relation});
 
     $toModel->__type = "all";
-    $toModel->pivot = $fromModel;
+    $toModel->parent = $fromModel;
     return  $toModel;
+  }
+  protected function withPivod(...$columns)
+  {
+
+    if (!isset($this->__tableRelation))
+      show_error("Tidak Ada Tabel Relation", 404, $heading = 'An Error Was Encountered');
+
+    $modelRelation = new Relation($this->__tableRelation);
+
+    $select = '';
+    $pivot = null;
+    foreach ($columns as $i => $column) {
+      if (in_array($column, $modelRelation->getTable("fields"))) {
+        $pivot[] = "pv_" . $column;
+        if ($i == 0)
+          $select .= $modelRelation->getTable("name") . "." . $column . " as pv_" . $column;
+        else $select .= ", " . $modelRelation->getTable("name") . "." . $column . " as pv_" . $column;
+      }
+    }
+    $this->__pivot = $pivot;
+
+    $this->db->select($select);
+    return $this;
   }
   public function group($key, $val = null)
   {

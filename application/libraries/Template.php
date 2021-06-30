@@ -102,8 +102,10 @@ class Template
   {
     // membaca jenis template dan nama tema
     $theme = $this->readTheme($template);
+    $this->set_content('thema_folder', base_url("themes/{$template}/" . $theme . '/'));
+    $this->set_content('thema_load', "../../themes/{$template}/{$theme}/");
 
-    return $this->ci->load->view("../../themes/{$template}/{$theme}/pages/" . $page,         $data, $return);
+    return $this->ci->load->view("../../themes/{$template}/{$theme}/pages/" . $page,         array_merge($this->template_data, $this->ci->data, $data), $return);
   }
   // pendukun load
   function set_content($name, $value)

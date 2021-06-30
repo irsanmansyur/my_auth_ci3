@@ -1,5 +1,3 @@
-const elFormTambahKeranjang = document.querySelector("form#submitBarang"),
-  elInputKode = elFormTambahKeranjang.querySelector("[name=inputKode]");
 $(document).ready(function () {
   $("#inputKode").select2({
     placeholder: "Input Kode",
@@ -51,42 +49,8 @@ $(document).ready(function () {
       tampil_modal_bayar();
     }
   })
-  $("#selectPelanggan").select2({
-    ajax: {
-      url: $("#selectPelanggan").attr('endpoint'),
-      processResults: function (data, params) {
-        console.log(params);
-        params.page = params.page || 1;
-        return {
-          results: data.data.data.map(User => {
-            if (User.name === "UMUM")
-              User.selected = true;
-            User.text = User.name;
-            return User;
-          }),
-          pagination: {
-            more: (params.page * 10) < data.data.recordsFiltered
-          }
-        };
-      },
-      data: function (params) {
-        let query = {
-          search: params.term,
-          role: "Pelanggan",
-          page: params.page || 1
-        }
 
-        // Query parameters will be ?search=[term]&type=public
-        return query;
-      }
-    }
-  });
-  $('#selectPelanggan').on('select2:select', function (e) {
-    let data = e.params.data;
-    $("[name=emailPelanggan]").val(data.email);
-    $("[name=no_hp]").val(data.no_hp ?? "xxx xxx xxx xxx");
-    $("[name=pelanggan_id]").val(data.id);
-  });
+
 
 
   $('#modalBayar').on('shown.bs.modal', function (e) {
@@ -96,18 +60,22 @@ $(document).ready(function () {
 
 
 
-elFormTambahKeranjang.addEventListener("submit", async function (e) {
+$("form#submitBarang").on("submit", function (e) {
   e.preventDefault();
-  let res = await tambahKeranjang();
+  tambahKeranjang();
 });
 
-
-
 const tambahKeranjang = async kodeBarang => {
+  const elFormTambahKeranjang = document.querySelector("form#submitBarang");
+  const elInputKode = elFormTambahKeranjang.querySelector("[name=kode_barang]");
   let formData = new FormData(elFormTambahKeranjang);
   for (let i in formData) {
     formData.append(i, formData[i])
   }
+
+  const obj = document.createElement("audio");
+  obj.src = `${baseUrl}assets/audio/beep.mp3`;
+  obj.play();
   return fetch(elFormTambahKeranjang.getAttribute('action'), {
     method: "POST",
     body: formData
@@ -125,7 +93,6 @@ const tambahKeranjang = async kodeBarang => {
         });
       dataTableKeranjang.ajax.reload();
       elInputKode.value = "";
-      $("#inputKode").select2('open');
     });
 
 }
@@ -147,6 +114,9 @@ const dataTableKeranjang = $('#keranjang-datatable').DataTable({
   ajax: {
     url: $('#keranjang-datatable').attr('endpoint'),
     type: 'POST',
+    data: {
+      "jenis": "keranjang kasir"
+    },
     "dataSrc": function (json) {
       let JumlahBayar = 0;
       let data = json.data.map(res => {
@@ -181,8 +151,9 @@ const dataTableKeranjang = $('#keranjang-datatable').DataTable({
   ]
 });
 
+// datatable keranjang event
 $('#keranjang-datatable tbody').on('click', '.ubahJumlah', function (e) {
-  let butt = e.target;
+  let butt = $(this)[0];
   let data = dataTableKeranjang.row($(this).parents('tr')).data();
   (async () => {
     let url = "tambahi";
@@ -200,7 +171,7 @@ $('#keranjang-datatable tbody').on('click', '.ubahJumlah', function (e) {
   })();
 });
 $('#keranjang-datatable tbody').on('change', '.jumlah_val', function (e) {
-  let el_input = e.target;
+  let el_input = $(this)[0];
   let data = dataTableKeranjang.row($(this).parents('tr')).data();
 
   (async () => {
@@ -251,17 +222,9 @@ const elModalBayar = document.querySelector("#modalBayar");
 
 const elBtnModal = document.querySelector("#btnBayar");
 elBtnModal.addEventListener("click", function (e) {
-  tampil_modal_bayar();
+  $("#modalBayar").modal("show");
 })
 
-function tampil_modal_bayar() {
-  if ($("[name=pelanggan_id]").val() === "") {
-    swal("harap Pilih Pelanggan", "", "error")
-      .then((ret) => {
-        $('#selectPelanggan').select2('open');
-      });
-  } else $("#modalBayar").modal("show");
-}
 
 const setPembayaran = (jumlahBayar = null) => {
   let elFormModal = elModalBayar.querySelector("form"),
@@ -286,8 +249,16 @@ const setPembayaran = (jumlahBayar = null) => {
     elKembalian.value = "-" + formatRupiah(bayar - jumlah, "Rp. ");
     elButtonBayar.disabled = true;
   }
-
+  if ($("[name=status_bayar]:checked").val() == 'kredit') {
+    if (jumlah < bayar) {
+      $("#status1").prop('checked', true);
+      $("[name=uangBayar]").focus();
+    }
+    if (jumlah > 0)
+      elButtonBayar.disabled = false;
+  }
 }
+
 const toDecimal = (rupiahFormat) => {
   rupiahFormat = (rupiahFormat + "").replace(/[^\d.-]/g, '');
   let splitBelakangKoma = rupiahFormat.split(","),

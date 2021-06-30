@@ -31,28 +31,47 @@ class Penjualan extends Admin_Controller
       "penjualan" => $this->penjualan->first($id_penjualan)
     ]);
   }
+  public function struk($id_penjualan)
+  {
+    return  $this->template->view('admin', 'kasir/penjualan/partials/_struck_penjualan', [
+      "penjualan" => $this->penjualan->first($id_penjualan)
+    ]);
+  }
   public function bayar()
   {
+    $idPElanggan = $this->input->post("pelanggan_id");
+    if ($idPElanggan)
+      $pelanggan = $this->user->first($idPElanggan);
+    else
+      $pelanggan =   $this->user->like("name", "umum")->first();
+
+    $statusBayar = $this->input->post("status_bayar");
+    $metodeBayar = $this->input->post("metode_bayar");
+
     $keranjangs = $this->keranjang->getDatatable();
     $penjualan = $this->penjualan->save([
       "kasir_id" => user()->id,
       "no_invoice" => $this->input->post("no_invoice"),
       "created_at" => $this->input->post("tgl_invoice"),
-      "pelanggan_id" => $this->input->post("pelanggan_id"),
+      "pelanggan_id" => $pelanggan->id,
       "jumlah_bayar" => (float)    str_replace(["Rp.", ".", " "], '', $this->input->post("jumlah_bayar")),
       "uang_bayar" => (float)    str_replace(["Rp.", ".", " "], '', $this->input->post("uangBayar")),
       "kembalian" => (float)    str_replace(["Rp.", ".", " "], '', $this->input->post("kembalian")),
+      "status_bayar" => $statusBayar,
+      "metode_bayar" => $metodeBayar,
+      "jatuh_tempo" => $statusBayar == "kredit" ? $this->input->post("jatuh_tempo") : null
     ]);
+    $this->transaksi($penjualan);
+
     foreach ($keranjangs['data'] as $key => $keranjang) {
       $brgJual = new  $this->penjualanBrg;
       $barang = $keranjang->barang;
-
       $brgJual->save([
         "penjualan_id" => $penjualan->id,
         "barang_id" => $keranjang->barang_id,
-        "harga" => $barang->harga,
+        "harga" => $barang->harga_jual,
         "jumlah" => $keranjang->jumlah_barang,
-        "total_harga" => $keranjang->jumlah_barang * $barang->harga,
+        "total_harga" => $keranjang->jumlah_barang * $barang->harga_jual,
       ]);
       $barang->stok -= $keranjang->jumlah_barang;
       $barang->update();
@@ -60,6 +79,38 @@ class Penjualan extends Admin_Controller
     }
     return redirect(base_url("kasir/invoice/penjualan/" . $penjualan->no_invoice));
   }
+
+  public function transaksi($penjualan)
+  {
+    if ($penjualan->status_bayar == "lunas") {
+      $data = [
+        "kode_transaksi" => $penjualan->no_invoice,
+        "debit_name" => $penjualan->metode_bayar == "tunai" ? "Kas" : "Atm/Bank",
+        "kredit_name" =>  "Penjualan Barang",
+        "jenis" => "pemasukan",
+        "jumlah" => $penjualan->jumlah_bayar,
+        "kembalian" => $penjualan->kembalian,
+      ];
+      return  $this->db->insert("transaksi", $data);
+    } else {
+      $data = [
+        "kode_transaksi" => $penjualan->no_invoice,
+        "kembalian" => $penjualan->kembalian,
+        "kredit_name" =>  "Penjualan Barang"
+      ];
+      if ($penjualan->uang_bayar > 0) {
+        $data["debit_name"] = $penjualan->metode_bayar == "tunai" ? "Kas" : "Atm/Bank";
+        $data["jenis"] = "pemasukan";
+        $data["jumlah"] = $penjualan->uang_bayar;
+        $this->db->insert("transaksi", $data);
+      }
+      $data["debit_name"] = "Piutang Penjualan";
+      $data["jenis"] = "pengeluaran";
+      $data["jumlah"] = $penjualan->jumlah_bayar - $penjualan->uang_bayar;
+      $this->db->insert("transaksi", $data);
+    }
+  }
+
   public function datatable()
   {
     $params =  $this->params_datatable();
@@ -74,6 +125,7 @@ class Penjualan extends Admin_Controller
     $params['columns'] = ["users.name"];
 
     $penjualans = $this->penjualan->select("users.name as nama_pelanggan")->join("users", "users.id=penjualans.pelanggan_id")->get_data($params);
+
     $recordsFiltered = $this->penjualan->select("users.name as nama_pelanggan")->join("users", "users.id=penjualans.pelanggan_id")->search_and_order($params)->count();
     foreach ($penjualans as $i => $penjualan) {
       $penjualans[$i]->urut = isset($params['order']) &&  $params['order'][1] == "desc" ? $recordsFiltered - $params['start'] - $i : $params['start'] + $i + 1;

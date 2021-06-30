@@ -43,7 +43,7 @@
     let elLinkSubmenus = document.querySelectorAll(`li.s-menu>a`);
     elLinkSubmenus.forEach(elLinkSubmenu => {
       let link = elLinkSubmenu.getAttribute("href");
-      if (link.toLowerCase().toString() == path) {
+      if (link.toLowerCase().toString() == path.toLowerCase().toString()) {
         elLinkSubmenu.closest("li") && elLinkSubmenu.closest("li").classList.add("active");
         elLinkSubmenu.closest(".collapse") && elLinkSubmenu.closest(".collapse").classList.add("show");
         elLinkSubmenu.closest(".nav-item") && elLinkSubmenu.closest(".nav-item").classList.add('active', 'submenu');

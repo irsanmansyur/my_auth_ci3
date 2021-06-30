@@ -52,6 +52,44 @@ class Setting extends Admin_Controller
       $this->template->load('admin', 'setting/index', $data);
     }
   }
+  public function toko()
+  {
+    if (!in_role("Admin"))
+      return  $this->not_permition(403, "Anda Tidak Punya Akses Setting Toko");
+
+    $setting_toko = (object) $this->data['settings'];
+
+    $this->form_validation->set_rules("name_app", "Nama Toko", "required");
+    $this->form_validation->set_rules("alamat", "alamat Toko", "required");
+    $this->form_validation->set_rules("telp", "telp Toko", "required");
+    $this->form_validation->set_rules("email", "email Toko", "required|valid_email");
+    if ($this->form_validation->run()) {
+      $this->db->update("settings", ["value" => $this->input->post("name_app")], ['name' => "name_app"]);
+      $this->db->update("settings", ["value" => $this->input->post("telp")], ['name' => "telp"]);
+      $this->db->update("settings", ["value" => $this->input->post("alamat")], ['name' => "alamat"]);
+      $this->db->update("settings", ["value" => $this->input->post("email")], ['name' => "email"]);
+
+      if ($_FILES['uploadImg']['name']) {
+        $config['allowed_types'] = 'gif|jpg|jpeg|png';
+        $config['max_size']      = '2048';
+        $config['upload_path'] = './assets/img/setting/';
+        $this->load->library('upload', $config);
+        if ($this->upload->do_upload('uploadImg')) {
+          if (is_file(FCPATH . 'assets/img/setting/' . $setting_toko->logo) && $setting_toko->logo !== 'default.jpg')
+            unlink(FCPATH . 'assets/img/setting/' . $setting_toko->logo);
+          $this->db->update("settings", ["value" => $this->upload->data('file_name')], ['name' => "logo"]);
+        }
+      }
+      $this->session->set_flashdata('success', "Setting Have Updated .!");
+      return back();
+    }
+
+    $data = [
+      'page_title' => "Settings TOKO",
+      "setting_toko" => $setting_toko
+    ];
+    $this->template->load('admin', 'setting/toko', $data);
+  }
   function getAllUser()
   {
     $list = $this->user_model->get_datatables();

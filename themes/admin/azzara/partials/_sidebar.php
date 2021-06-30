@@ -24,12 +24,14 @@
                  </a>
                </li>
 
-               <?php if (in_role("Super Admin")) : ?>
+               <?php if (in_role("Admin")) : ?>
                  <li>
-                   <a href="<?= base_url('admin/setting'); ?>">
-                     <span class="link-collapse">Settings</span>
+                   <a href="<?= base_url('admin/setting/toko'); ?>">
+                     <span class="link-collapse">Toko Setting</span>
                    </a>
                  </li>
+               <?php endif; ?>
+               <?php if (in_role("Super Admin")) : ?>
                <?php endif; ?>
              </ul>
            </div>
@@ -49,7 +51,7 @@
            <?php if (!$menu->url) : ?>
              <li class="nav-item menu">
                <a data-toggle="collapse" href="#<?= $menu->name ?>">
-                 <i class="fas fa-layer-group"></i>
+                 <?= $menu->icon ?? '<i class="fas fa-layer-group"></i>'; ?>
                  <p><?= $menu->name; ?></p>
                  <span class="caret"></span>
                </a>

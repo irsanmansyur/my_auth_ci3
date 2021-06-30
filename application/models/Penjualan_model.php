@@ -11,12 +11,13 @@ class Penjualan_model extends MY_Model
   }
   public function barangs()
   {
-    return $this->belongsToMany("Barang_model", "penjualan_id", "barang_id", "penjualan_barang")->select("penjualan_barang.harga,penjualan_barang.jumlah,penjualan_barang.total_harga");
+    return $this->belongsToMany("Barang_model", "penjualan_id", "barang_id", "penjualan_barang")->select("penjualan_barang.harga,penjualan_barang.jumlah,penjualan_barang.total_harga")->withPivod("jumlah", "harga");
+  }
+  public function transaksi()
+  {
+    return $this->hasMany("Transaksi_model", "kode_transaksi", "no_invoice");
   }
 
-  public function brgs()
-  {
-  }
   public function kasir()
   {
     return $this->belongsTo("User_model", "kasir_id", "id");

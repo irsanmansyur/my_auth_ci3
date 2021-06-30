@@ -27,8 +27,7 @@ class Keranjang extends Admin_Controller
   public function tambah()
   {
     $kodeBarang = $this->input->get_post("kode_barang");
-
-    $barang = $this->barang->where("kode", $kodeBarang)->first();
+    $barang = $this->barang->harga_khusus()->where("kode", $kodeBarang)->first();
     if (!$barang)
       return $this->output->set_content_type("application/json")
         ->set_output(json_encode(['status' => false, "message" => "Barang Tidak Di Temukan", "request" => $this->input->post()]));
@@ -46,6 +45,9 @@ class Keranjang extends Admin_Controller
       $keranjang = $this->keranjang->save([
         "kasir_id" => user()->id,
         'barang_id' => $barang->id,
+        "jenis" => "keranjang kasir",
+        "harga_jual" =>  $this->input->get_post("harga_jual") ?  $this->input->get_post("harga_jual") : (isset($barang->harga_jual_khusus) ? $barang->harga_jual_khusus : $barang->harga_jual),
+        "harga_beli" => $this->input->get_post("harga_beli") ?  $this->input->get_post("harga_beli") : (isset($barang->harga_beli_khusus) ? $barang->harga_beli_khusus : $barang->harga_beli),
         "jumlah_barang" => $this->input->get_post("jumlahBarang") ?  $this->input->get_post("jumlahBarang") : 1,
       ]);
 
@@ -106,7 +108,7 @@ class Keranjang extends Admin_Controller
   {
     $params =  $this->params_datatable();
     if ($this->input->get_post("jenis"))
-      $params['where']["kasir_id"] = user()->id;
+      $params['where']["jenis"] = $this->input->get_post("jenis");
     if ($this->input->get_post("mulai_tanggal"))
       $params['where']["penjualans.created_at >="] = $this->input->get_post("mulai_tanggal");
     if ($this->input->get_post("sampai_tanggal"))

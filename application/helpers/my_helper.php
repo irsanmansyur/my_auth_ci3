@@ -94,10 +94,9 @@ function toDelete($link)
   unlink($link);
 }
 
-function rupiah($angka)
+function rupiah($angka, $prefix = '')
 {
-
-  $hasil_rupiah = "Rp " . number_format($angka, 2, ',', '.');
+  $hasil_rupiah = $prefix . number_format($angka, 2, ',', '.');
   return $hasil_rupiah;
 }
 

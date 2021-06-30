@@ -160,6 +160,18 @@ class Barang_model extends MY_Model
       $this->db->limit($params['length'], $params['start']);
     return $this->all();
   }
+
+  public function harga_khusus()
+  {
+    $method = "LIFO";
+    if ($method == "FIFO")
+      $order = "ASC";
+    else $order = "DESC";
+    $this->select("(SELECT id FROM barang_pembelian WHERE barang_id=barangs.id ORDER BY created_at $order LIMIT 1) as id_barang_pembelian");
+    $this->select("(SELECT harga_jual as harga_jual_khusus FROM barang_pembelian WHERE barang_id=barangs.id ORDER BY created_at $order LIMIT 1) as harga_jual_khusus");
+    $this->select("(SELECT harga_beli as harga_beli_khusus FROM barang_pembelian WHERE barang_id=barangs.id ORDER BY created_at $order LIMIT 1) as harga_beli_khusus");
+    return $this;
+  }
   public function search_and_order($params = [])
   {
     if (isset($params['search'])) {

@@ -27,7 +27,7 @@
                         <i class="fas fa-box"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats ml-md-3 ml-1">
                       <div class="numbers">
                         <p class="card-category">Jenis Barang</p>
                         <h4 class="card-title"><?= $jumlah_jenis_barang; ?></h4>
@@ -46,7 +46,7 @@
                         <i class="fas fa-layer-group"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats ml-md-3 ml-1">
                       <div class="numbers">
                         <p class="card-category">Kategori Barang</p>
                         <h4 class="card-title"><?= $jumlah_kategori; ?></h4>
@@ -65,7 +65,7 @@
                         <i class="fas fa-people-carry"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats ml-md-3 ml-1">
                       <div class="numbers">
                         <p class="card-category">Sulpliers</p>
                         <h4 class="card-title"><?= $jumlah_suplier; ?></h4>
@@ -84,7 +84,7 @@
                         <i class="fas fa-user-check"></i>
                       </div>
                     </div>
-                    <div class="col col-stats ml-3 ml-sm-0">
+                    <div class="col col-stats ml-md-3 ml-1">
                       <div class="numbers">
                         <p class="card-category">Pelanggan Terdaftar</p>
                         <h4 class="card-title"><?= $jumlah_pelanggan; ?></h4>
