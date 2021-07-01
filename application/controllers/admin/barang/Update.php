@@ -6,6 +6,7 @@ class Update extends Admin_Controller
   public function __construct()
   {
     parent::__construct();
+    header("Access-Control-Allow-Origin: *");
     $this->load->model(["Barang_model" => "barang"]);
   }
 
@@ -27,7 +28,7 @@ class Update extends Admin_Controller
     ]);
     return $this->output->set_content_type("application/json")
       ->set_output(json_encode([
-        "status" => false,
+        "status" => true,
         "message" => "Harga Barang Di Update",
         "barang" => $barang
       ]));

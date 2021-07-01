@@ -92,6 +92,7 @@
           harga_jual: AutoNumeric.getNumber("[name=harga_jual]")
         },
         success: res => {
+          console.log(res);
           alert(res.message)
         }
       })

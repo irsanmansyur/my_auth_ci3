@@ -1,6 +1,6 @@
 <div class="d-flex flex-column flex-md-row">
   <div class="col-md-7 order-md-2 pl-md-2 px-0">
-    <div class="card card-body">
+    <div class="card card-body p-2 p-md-3">
       <h3 class="pb-2 border-bottom text-primary">List Belanjaan</h3>
       <div class="border-top table-responsive">
         <table id="datatable-barang" class="table table-striped table-bordered " style="width:100%">
@@ -30,7 +30,7 @@
     <?php
     $transaksies = $penjualan->transaksi()->where("jenis", "pemasukan")->all();
     if (count($transaksies) > 0) : ?>
-      <div class="card card-body">
+      <div class="card card-body p-2 p-md-3">
         <h3 class="pb-2 border-bottom text-primary">Riwayat Transaksi</h3>
         <div class="border-top table-responsive">
           <style>
@@ -99,7 +99,7 @@
     <?php endif; ?>
   </div>
   <div class="col-md-5 order-md-1 px-0">
-    <div class="card card-body">
+    <div class="card card-body p-2 p-md-3">
       <div class="row">
         <div class="col-6 col-lg-4 px-0 px-md-2">
           <div class="form-group pt-md-2 pb-0 pt-1">
@@ -134,13 +134,13 @@
         <div class="col-6 col-lg-4 px-0 px-md-2">
           <div class="form-group pt-md-2 pb-0 pt-1">
             <label class="mb-0 mb-sm-2"><strong class="text-danger">Sisa Pinjaman</strong></label>
-            <input class="form-control p-1 text-danger font-weight-bold" readonly value="<?= rupiah($penjualan->jumlah_bayar - $penjualan->dibayar); ?>">
+            <input class="rupiah form-control p-1 text-danger font-weight-bold" id="sisa_pinjaman" readonly value="<?= $penjualan->jumlah_bayar - $penjualan->dibayar; ?>">
           </div>
         </div>
       </div>
     </div>
     <?php if (isset($penjualan->dibayar) && $penjualan->jumlah_bayar - $penjualan->dibayar > 0) : ?>
-      <div class="border  card card-body">
+      <div class="border  card card-body p-2 p-md-3">
         <form action="" method="post" id="form-bayar">
           <input type="hidden" name="no_invoice" value="<?= $penjualan->no_invoice ?>">
           <div class="d-flex justify-content-center mb-2">
@@ -162,8 +162,8 @@
             <button class="col-md-5 btn btn-primary my-2 mt-md-0"><b>BAYAR</b></button>
           </div>
           <div class="form-group p-0 mb-1 mb-md-2">
-            <label for="#sisa_pinjaman">Sisa Pinjaman Sekarang</label>
-            <input type="text" class="rupiah form-control form-lg text-primary font-weight-bold text-right" name="sisa_pinjaman" value="0" readonly id="sisa_pinjaman">
+            <label>Sisa Pinjaman Sekarang</label>
+            <input type="text" class="rupiah form-control form-lg text-primary font-weight-bold text-right" name="sisa_pinjaman" value="0" readonly>
           </div>
           <div class="form-group p-0 mb-1 mb-md-2">
             <label for="#kembalian">Kembalian</label>
@@ -198,12 +198,13 @@
   })
 
   function apply_form() {
-    let jumlah = AutoNumeric.getNumber("#jumlah");
     let jumlah_pinjaman = parseInt($("[name=jumlah_pinjaman]").val());
+    let jumlah = AutoNumeric.getNumber("#jumlah");
     $("[name=kembalian]").val(jumlah - jumlah_pinjaman);
     $("[name=jumlah]").val(jumlah > jumlah_pinjaman ? jumlah_pinjaman : jumlah);
+
     AutoNumeric.set("#kembalian", jumlah - jumlah_pinjaman)
-    AutoNumeric.set("#sisa_pinjaman", jumlah > jumlah_pinjaman ? 0 : jumlah_pinjaman - jumlah)
+    AutoNumeric.set("[name=sisa_pinjaman]", jumlah > jumlah_pinjaman ? 0 : jumlah_pinjaman - jumlah)
   }
 
   function applyAutoNumeric() {

@@ -55,7 +55,7 @@ class MY_Controller extends CI_Controller
     ];
     return $data;
   }
-  
+
   public function not_permition(int $pageCode = 404, string $message = "Menu yang anda akses di larang", ...$arg)
   {
     $data = [
@@ -63,14 +63,14 @@ class MY_Controller extends CI_Controller
       "page_code" => $pageCode,
     ];
     if ($this->input->is_ajax_request()) {
-      return $this->output->set_content_type("application/json")
+      $this->output->set_content_type("application/json")
         ->set_output(
           json_encode($data)
         );
+      die();
     };
-
-
-    return $this->template->load("admin", "404", $data);
+    $this->template->load("admin", "404", $data);
+    die();
   }
 }
 

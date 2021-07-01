@@ -83,7 +83,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body p-1 p-md-3">
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group py-0 ">
@@ -92,7 +92,7 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <div class="form-group p-0">
+                <div class="form-group">
                   <div class="d-flex justify-content-between">
                     <label class="mb-0 mb-sm-2" for="selectPelanggan">Nama Pelanggan</label>
                   </div>
@@ -189,8 +189,16 @@
     <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Barang Modal" aria-hidden="true" id="modal-barang">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
-          <div class="card card-body">
-            <?php $this->load->view($thema_load . "pages/kasir/penjualan/partials/_datatable_jual_barang"); ?>
+          <div class="modal-header">
+            <h5 class="modal-title" id="title-modal-daftar-barang">Daftar Barang</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="card card-body p-1 p-md-2">
+              <?php $this->load->view($thema_load . "pages/kasir/penjualan/partials/_datatable_jual_barang"); ?>
+            </div>
           </div>
         </div>
       </div>

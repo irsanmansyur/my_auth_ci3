@@ -26,4 +26,5 @@
 <!-- CSS Just for demo purpose, don't include it in your project -->
 <link rel="stylesheet" href="<?= $thema_folder; ?>assets/css/demo.css">
 <link rel="stylesheet" href="<?= $thema_folder; ?>assets/css/style.css">
+<link rel="stylesheet" href="<?= base_url("assets/css/skeleton.min.css"); ?>">
 <script src="<?= $thema_folder; ?>assets/js/main.js"></script>

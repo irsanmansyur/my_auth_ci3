@@ -1,18 +1,19 @@
-<table id="datatable-jual_barang" class="table table-hover display table table-striped table-hover w-100">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col" class="pilih"></th>
-      <th scope="col">Nama</th>
-      <th scope="col">Kode</th>
-      <th scope="col">Harga Jual</th>
-      <th scope="col">Sisa Stok</th>
-    </tr>
-  </thead>
-  <tbody>
-  </tbody>
-</table>
-
+<div class="table-responsive">
+  <table id="datatable-jual_barang" class="table table-hover display table table-striped table-hover w-100">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col" class="pilih"></th>
+        <th scope="col">Nama</th>
+        <th scope="col">Kode</th>
+        <th scope="col">Harga Jual</th>
+        <th scope="col">Sisa Stok</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
 <script>
   const datatable_barang = $("#datatable-jual_barang").DataTable({
     "columnDefs": [{

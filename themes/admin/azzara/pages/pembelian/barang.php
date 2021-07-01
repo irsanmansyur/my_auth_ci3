@@ -17,7 +17,7 @@
     <div class="main-panel">
       <div class="content">
         <div class="page-inner">
-          <div class="card card-body">
+          <div class="card card-body p-1 p-md-3">
             <div class="row">
               <div class="col-md-4 col-12">
                 <div class="input-group mb-3">
@@ -45,8 +45,8 @@
 
             </div>
           </div>
-          <div class="card card-body text-right">
-            <div class="input-group my-3">
+          <div class="card card-body text-right p-1 p-md-3">
+            <div class="input-group mb-2">
               <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1"><b>TOTAL</b></span>
               </div>
@@ -62,6 +62,12 @@
     <div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Barang Modal" aria-hidden="true" id="modal-barang">
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="title-modal-daftar-barang">Daftar Pinjaman Pelanggan</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
           <div class="card card-body">
             <?php $this->load->view($thema_load . "pages/pembelian/partials/_datatable_pilih_barang"); ?>
           </div>
